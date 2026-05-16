@@ -1,11 +1,12 @@
 /* ============================================================
-   MOBILE PATCH — portfoliotik
-   Tambahkan file ini di <head> SETELAH styles.css
+   MOBILE PATCH v2 — portfoliotik
+   Ganti mobile-patch.css sebelumnya dengan file ini.
+   Letakkan di <head> SETELAH styles.css:
    <link rel="stylesheet" href="mobile-patch.css">
    ============================================================ */
 
 /* ----------------------------------------------------------
-   0. OVERFLOW GLOBAL — sumber utama horizontal scroll
+   0. GLOBAL: Cegah semua overflow horizontal
    ---------------------------------------------------------- */
 html, body {
   overflow-x: hidden;
@@ -13,400 +14,455 @@ html, body {
 }
 
 /* ----------------------------------------------------------
-   1. VIEWPORT META GUARD
-      Pastikan elemen tidak pernah melebihi lebar layar
-   ---------------------------------------------------------- */
-* {
-  max-width: 100%;
-}
-
-img, iframe, svg {
-  max-width: 100%;
-  height: auto;
-}
-
-/* ----------------------------------------------------------
-   2. BREAKPOINT MOBILE — max-width: 768px
+   1. BREAKPOINT MOBILE ≤768px
    ---------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  /* --- NAV DOTS: pindah ke bawah tengah agar tidak overlap --- */
+  /* === NAVIGATION: pindah ke bawah, lebih mudah dijangkau jempol === */
   .story-nav {
     position: fixed;
     right: unset;
     top: unset;
-    bottom: 18px;
+    bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 10px;
     z-index: 30;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(6px);
-    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 7px 14px;
     border-radius: 999px;
   }
 
-  /* --- SCENE BASE: reset min-height dan padding gila-gilaan --- */
+  /* ================================================================
+     SCENE BASE
+  ================================================================ */
   .scene {
-    min-height: 100svh;           /* pakai svh agar tidak over-tall di mobile */
-    padding: 72px 18px 60px;
+    min-height: 100svh;
+    padding: 60px 18px 80px;
     overflow: hidden;
+    position: relative;
   }
 
   /* ================================================================
-     SCENE-HOME
-     Masalah: h1 margin-top: -200px mendorong konten ke atas viewport
-     Fix: hapus margin negatif, perkecil house, restrict cloud overflow
+     HOME — Screenshot 1: sudah bagus, hanya perlu fine-tune
   ================================================================ */
   .scene-home {
-    min-height: 100svh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 0 18px;
+    justify-content: flex-end;    /* konten di bawah */
+    min-height: 100svh;
+    padding: 20px 18px 60px;
     overflow: hidden;
   }
 
   h1 {
-    margin-top: 0;              /* hilangkan -200px yang merusak layout */
-    font-size: clamp(2.2rem, 11vw, 3.6rem);
-    line-height: 1.05;
+    margin-top: 0;               /* KRITIS: hapus -200px yang sudah dipatch */
+    font-size: clamp(2rem, 10vw, 3.2rem);
     text-align: center;
     position: relative;
     z-index: 5;
-    padding: 0 10px;
+    padding: 0 8px 20px;
+    line-height: 1.1;
   }
 
   .home-copy {
     width: 100%;
     max-width: 100%;
-    margin-top: auto;
-    padding-bottom: 120px;      /* beri ruang agar tidak ditimpa rumah */
+    text-align: center;
+    margin-bottom: 30px;
   }
 
-  /* Cloud: kecilkan dan pastikan tidak overflow horizontal */
+  /* Cloud kiri — jangan overflow kanan */
   .cloud-a {
-    left: -40px;                /* bukan -10vw yang bisa besar di mobile */
-    top: 0;
-    width: min(320px, 90vw);
+    left: -20px;
+    top: 5px;
+    width: min(300px, 82vw);
   }
 
+  /* Cloud kanan */
   .cloud-c {
     left: unset;
-    right: -30px;
-    top: 20px;
-    width: min(260px, 75vw);
+    right: -20px;
+    top: 30px;
+    width: min(240px, 66vw);
   }
 
-  /* Rumah: center, lebih kecil */
+  /* Rumah: di center, tidak overflow */
   .floating-house {
     position: absolute;
     left: 50%;
-    bottom: 40px;
+    bottom: 50px;
     margin-left: 0;
-    transform: translateX(-50%);
-    width: min(280px, 75vw);    /* turun dari 420px */
+    transform: translateX(-50%) !important; /* override JS parallax */
+    width: min(260px, 70vw);
     z-index: 2;
   }
 
   /* ================================================================
-     SCENE-ABOUT
-     Masalah: grid 2-kolom dengan minmax(300px) pecah di mobile
-     Fix: single column, iframe scaled down
+     ABOUT — Screenshot 2: teks OK, lanyard iframe perlu diperbaiki
+     Masalah: iframe muncul sebagai kotak kecil di tengah-bawah (visible)
+     Solusi: jadikan iframe relative block, bukan absolute fullscreen
   ================================================================ */
   .scene-about {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 0;
-    padding: 80px 18px 40px;
+    padding: 70px 18px 40px;
     min-height: unset;
   }
 
   .about-copy {
     width: 100%;
     max-width: 100%;
-    padding: 16px 4px;
+    padding: 0 4px 0;
     font-size: 0.95rem;
+    order: 1;
   }
 
-  /* Lanyard iframe: BIANG masalah utama
-     - width: 100vw + scale(1.5) = 150vw → overflow!
-     Fix: scale turun, clip ketat */
+  .about-copy h2 {
+    font-size: clamp(1.8rem, 7vw, 2.4rem);
+    margin-bottom: 12px;
+  }
+
+  /* Lanyard: ukuran fixed yang tidak overflow */
   .lanyard-frame {
-    position: relative;        /* dari absolute agar tidak overlap konten */
+    position: relative;
     inset: unset;
     width: 100%;
-    height: 420px;             /* fixed height, bukan 100vh */
-    margin-top: 16px;
+    height: 380px;
+    margin-top: 20px;
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: 16px;
+    order: 2;
   }
 
   .lanyard-frame iframe {
     width: 100%;
     height: 100%;
-    transform: scale(1.0) translate(0, 0);  /* hapus scale(1.5) yang menyebabkan overflow */
-    transform-origin: center top;
+    transform: none;              /* hapus scale(1.5) sepenuhnya */
+    transform-origin: unset;
+    border: none;
   }
 
-  /* Balon: atur ulang posisi absolute agar tidak overflow ke kanan */
+  /* Balon: kecil, tidak overflow */
   .floating-balloon {
+    position: absolute;
     right: unset;
-    left: -20px;
-    top: 30px;
-    width: 90px;               /* turun dari 240px */
-    animation-duration: 4s;    /* pertahankan animasi */
+    left: 8px;
+    top: 40px;
+    width: 70px;
+    animation-duration: 5s;
+    z-index: 2;
   }
 
   .floating-balloon-balloon2 {
+    position: absolute;
     right: unset;
-    left: 20px;
-    top: 380px;
-    width: 65px;               /* turun dari 140px */
+    left: 30px;
+    top: unset;
+    bottom: 60px;
+    width: 55px;
+    animation-duration: 7s;
   }
 
   .floating-balloon-balloon3 {
-    right: 10px;
-    top: 120px;
-    width: 65px;               /* turun dari 140px */
+    position: absolute;
+    right: 12px;
+    top: 80px;
+    width: 55px;
+    animation-duration: 6s;
   }
 
   /* ================================================================
-     SCENE-PROJECTS
-     Masalah: .projects-title translateX(350px) → overflow parah
-             .project-house absolute bottom overflow
+     PROJECTS — Screenshot 3:
+     "Proyek" teks overlap dengan rumah
+     Masalah: .project-house position:absolute menimpa teks
+     Solusi: sembunyikan project-house di mobile, judul turun ukuran
   ================================================================ */
   .scene-projects {
-    padding: 60px 18px 80px;
+    padding: 60px 18px 60px;
     min-height: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .projects-title {
-    font-size: clamp(3rem, 18vw, 6rem);  /* turun dari 10rem */
-    transform: translateX(0);             /* hapus translateX(350px) */
+    font-size: clamp(4rem, 22vw, 7rem);  /* turun dari 10rem */
+    transform: none !important;           /* hapus translateX(350px) */
     text-align: center;
     width: 100%;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 5;
   }
 
+  /* Sembunyikan rumah project yang overlap teks */
   .project-house {
-    position: relative;         /* dari absolute agar tidak overflow */
-    left: unset;
-    bottom: unset;
-    width: 100%;
-    max-width: 420px;
-    margin: 0 auto;
-    display: block;
+    display: none;
   }
 
   /* ================================================================
-     SCENE-PROJECTS-TWO (Room dengan sofa, laci, jam, TV)
-     Masalah: semua elemen pakai absolute px → broken total di mobile
+     PROJECTS-TWO — Screenshot 3 & 4:
+     Masalah:
+     - projects-room-grid margin-top:320px + translateY(-260px) = net +60px
+       tapi ada room-drawer absolut dan room-clock absolut yang aneh
+     - card-tall 320px lebar, card-wide 520px lebar → muat kalau stacked
   ================================================================ */
   .scene-projects-two {
-    padding: 40px 18px 60px;
+    padding: 40px 18px 50px;
     min-height: unset;
     overflow: hidden;
   }
 
-  /* Room grid: stack vertical */
-  .projects-room-grid {
-    flex-direction: column;
-    align-items: center;
-    gap: 32px;
-    margin-top: 32px;
-    transform: none;            /* hapus translateY(-260px) */
-  }
-
-  /* Photo cards: full width mobile */
-  .card-tall {
-    width: min(300px, 90vw);
-    transform: rotate(-1deg);   /* kurangi rotasi */
-  }
-
-  .card-tall .photo-frame img {
-    height: 360px;              /* turun dari 760px */
-  }
-
-  .card-wide {
-    width: min(300px, 90vw);   /* turun dari 520px */
-    transform: rotate(1deg);
-  }
-
-  .card-wide .photo-frame img {
-    height: 220px;              /* turun dari 340px */
-  }
-
-  /* Sofa: sembunyikan di mobile (terlalu besar, 700px) */
+  /* Sembunyikan dekorasi ruangan yang tidak bisa di-reflow di mobile */
   .room-sofa {
     display: none;
   }
 
-  /* Laci: reposition */
+  /* Laci: jadikan inline small decoration, bukan absolute */
   .room-drawer {
     position: relative;
     left: unset;
     bottom: unset;
-    width: 120px;
-    margin: 0 auto;
+    width: 90px;
+    margin: 12px auto;
     display: block;
+    z-index: 2;
   }
 
-  /* Jam: reposition */
+  /* Jam: jadikan inline decoration */
   .room-clock {
     position: relative;
     left: unset;
     top: unset;
     transform: none;
-    margin: 16px auto;
-    width: 80px;
+    width: 70px;
+    margin: 0 auto 8px;
     display: block;
+    z-index: 2;
+    /* override margin-top:500px yang ada di desktop */
+    margin-top: 0 !important;
   }
 
-  /* TV: dari absolute ke relative, full width */
+  /* Wood floor: kurangi height */
+  .wood-floor {
+    height: 160px;
+  }
+
+  /* Grid kartu: stack vertical di tengah */
+  .projects-room-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    margin-top: 0;               /* hapus 320px */
+    transform: none;             /* hapus translateY(-260px) */
+    position: relative;
+    z-index: 5;
+    padding-bottom: 20px;
+  }
+
+  /* Card tall: full width mobile */
+  .card-tall {
+    width: min(290px, 85vw);
+    transform: rotate(-1deg);
+  }
+
+  .card-tall .photo-frame img {
+    height: 300px;               /* turun dari 760px → lebih proporsional */
+  }
+
+  /* Card wide: full width mobile */
+  .card-wide {
+    width: min(290px, 85vw);    /* turun dari 520px */
+    transform: rotate(1deg);
+  }
+
+  .card-wide .photo-frame img {
+    height: 200px;               /* turun dari 340px */
+  }
+
+  /* TV frame: Screenshot 4 & 5 — dari absolute ke relative */
   .tv-frame {
     position: relative;
     top: unset;
     right: unset;
     width: 100%;
     max-width: 100%;
-    height: 220px;             /* turun dari 360px */
+    height: 200px;
     margin: 24px 0 0;
-    padding: 10px;
-    border-radius: 20px;
+    padding: 8px;
+    border-radius: 16px;
+    z-index: 6;
   }
 
+  /* TV caption: dari absolute ke relative */
   .tv-caption {
     position: relative;
     right: unset;
     top: unset;
     width: 100%;
     text-align: center;
-    padding: 16px 0 0;
+    padding: 14px 0 0;
+    z-index: 6;
   }
 
   .tv-caption h3 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
-  .wood-floor {
-    height: 180px;             /* turun dari 560px */
+  .tv-caption p {
+    font-size: 0.9rem;
   }
 
   /* ================================================================
-     SCENE-MEDIA-ROOM
-     Masalah: game-screen pakai absolute right:353px → overflow
-             media-setup 100vw bisa tetap, game-screen harus reflow
+     MEDIA ROOM — Screenshot 6:
+     Masalah: game-screen di right:353px + 550px lebar → overflow
+     game-screen muncul floating aneh di tengah halaman
   ================================================================ */
   .scene-media-room {
-    padding: 60px 18px 200px;   /* extra bottom untuk monitor */
+    padding: 40px 18px 220px;   /* bottom padding untuk monitor SVG */
     min-height: unset;
+    overflow: hidden;
   }
 
+  /* Monitor SVG tetap di bottom sebagai dekorasi */
+  .media-setup {
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 100vw;
+  }
+
+  /* Game screen: di atas monitor, center */
   .game-screen {
     position: absolute;
     top: unset;
     right: unset;
-    /* Hitung ulang: monitor SVG lebar 100vw, layar kira-kira di tengah */
+    /* posisi di atas monitor: monitor mulai ~160px dari bottom */
+    bottom: 165px;
     left: 50%;
-    bottom: 200px;              /* di atas kaki monitor */
     transform: translateX(-50%);
-    width: min(280px, 72vw);
+    width: min(250px, 68vw);
     height: auto;
-    aspect-ratio: 16/9;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 9;
+  }
+
+  .game-screen iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
   }
 
   /* ================================================================
-     SCENE-CONTACT
-     Masalah: grid 2 kolom + contact-copy pakai absolute position
+     CONTACT — Screenshot 6 (bawah):
+     Masalah: contact-copy pakai absolute positioning, teks terpotong
   ================================================================ */
   .scene-contact {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    min-height: unset;
-    padding: 80px 18px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 100svh;
+    padding: 80px 24px 60px;
+  }
+
+  /* Override grid dari desktop */
+  .scene-contact > * {
+    width: 100%;
   }
 
   .contact-copy {
-    position: relative;         /* hapus absolute positioning */
-    top: unset;
-    left: unset;
-    transform: none;
+    position: relative !important; /* override absolute */
+    top: unset !important;
+    left: unset !important;
+    transform: none !important;
     width: 100%;
-    padding: 16px 0;
+    padding: 0;
+    text-align: center;
   }
 
   .contact-copy h2 {
-    font-size: clamp(2rem, 9vw, 3.5rem);
+    font-size: clamp(1.8rem, 8vw, 3rem);
   }
 
   .contact-links {
-    align-items: center;        /* center di mobile */
+    align-items: center;
+    margin-top: 20px;
   }
 
   .contact-links a {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    justify-content: center;
   }
-
-  /* ================================================================
-     PERFORMA: matikan animasi berat di mobile
-     Tradeoff: visual lebih static tapi scroll smooth & baterai hemat
-  ================================================================ */
-  .floating-balloon,
-  .floating-balloon-balloon2,
-  .floating-balloon-balloon3 {
-    animation-duration: 6s;    /* perlambat, jangan matikan total */
-    will-change: unset;         /* hemat GPU memory */
-  }
-
-  .cloud,
-  .floating-house {
-    will-change: unset;         /* hapus will-change agar tidak boros VRAM */
-    transition: none;           /* hapus transition 0.08s yang firing setiap scroll */
-  }
-
-  /* ================================================================
-     PARALLAX JS — override via CSS transform
-     Script.js langsung set style.transform pada cloud & house.
-     Di mobile ini menyebabkan elemen melayang keluar layar.
-     Fix: tambahkan class .mobile-no-parallax lewat JS (lihat catatan)
-     atau clamp transform dengan CSS (tidak bisa, JS override)
-     → Solusi terbaik: disable parallax handler via JS (lihat script patch)
-  ================================================================ */
 }
 
 /* ----------------------------------------------------------
-   3. RANGE TABLET 768–900px — area abu-abu yang ada masalah
+   2. TABLET 769px–900px — area abu-abu masih ada masalah
    ---------------------------------------------------------- */
 @media (min-width: 769px) and (max-width: 900px) {
+
   .projects-title {
     font-size: 6rem;
-    transform: translateX(100px);   /* kurangi dari 350px */
+    transform: translateX(80px);  /* kurangi dari 350px */
   }
 
   .lanyard-frame iframe {
-    transform: scale(1.2) translate(-30px, 50px);  /* kurangi dari scale(1.5) */
+    transform: scale(1.15) translate(-25px, 30px);
   }
 
   .card-tall {
     width: 260px;
   }
 
+  .card-tall .photo-frame img {
+    height: 500px;               /* turun dari 760px */
+  }
+
   .card-wide {
-    width: 380px;
+    width: 360px;
   }
 
   .tv-frame {
     right: 20px;
-    width: 480px;
-    height: 280px;
-    top: 700px;
+    width: 460px;
+    height: 260px;
+    top: 680px;
+  }
+
+  .tv-caption {
+    right: 20px;
+    top: 610px;
+    width: 460px;
   }
 
   .game-screen {
-    right: 150px;
-    width: 420px;
-    height: 235px;
+    right: 80px;
+    top: 130px;
+    width: 380px;
+    height: 213px;
+  }
+
+  .floating-balloon {
+    right: 140px;
+    width: 160px;
+  }
+
+  .floating-balloon-balloon2 {
+    right: 320px;
+  }
+
+  .floating-balloon-balloon3 {
+    right: 60px;
   }
 }
