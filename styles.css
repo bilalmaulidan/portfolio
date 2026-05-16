@@ -1374,3 +1374,112 @@ background-size: cover;
 
   will-change: transform;
 }
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  section {
+    min-height: auto;
+    padding: 80px 20px;
+  }
+
+  h1 {
+    font-size: 3rem !important;
+    margin-top: 0 !important;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 2.2rem;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  /* HERO */
+
+  .hero-content,
+  .scene-content {
+    width: 100%;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .cloud-left,
+  .cloud-right {
+    width: 220px;
+  }
+
+  .house {
+    width: 260px !important;
+    left: 50%;
+    transform: translateX(-50%) !important;
+  }
+
+  /* ABOUT */
+
+  .scene-about {
+    display: flex !important;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .about-copy {
+    width: 100% !important;
+  }
+
+  /* PROJECT */
+
+  .project-grid,
+  .projects-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .project-card,
+  .poster-card,
+  iframe,
+  video,
+  img {
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  /* iframe/lanyard */
+
+  .lanyard-frame iframe {
+    width: 100% !important;
+    height: 500px !important;
+
+    transform: none !important;
+  }
+
+  /* decorative objects */
+
+  .balloon,
+  .garfield,
+  .sofa,
+  .monitor,
+  .floating-object {
+    transform: scale(0.7);
+  }
+
+  /* dot navigation */
+
+  .pagination {
+    right: 12px;
+    transform: scale(0.8);
+  }
+}
